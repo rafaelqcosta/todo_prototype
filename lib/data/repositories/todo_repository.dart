@@ -4,7 +4,6 @@ import '../../business/model/todo.dart';
 import '../../utils/result.dart';
 import '../services/database_service.dart';
 
-// #docregion TodoRepository
 class TodoRepository {
   TodoRepository({
     required DatabaseService database,

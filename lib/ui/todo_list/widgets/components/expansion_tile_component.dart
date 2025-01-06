@@ -35,16 +35,11 @@ class _ExpansionTileComponentState extends State<ExpansionTileComponent>
   @override
   void initState() {
     super.initState();
-
-    // Sincroniza estado local do checkbox
     isDone = widget.todo.isDone;
-
-    // 1s total de animação
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     );
-
     _blinkAnimation = TweenSequence<double>(List.generate(
             5,
             (int index) => TweenSequenceItem(
@@ -62,9 +57,8 @@ class _ExpansionTileComponentState extends State<ExpansionTileComponent>
 
   void _handleCheckboxChanged(bool? value) {
     setState(() {
-      isDone = true; // check local para a UI
+      isDone = true;
     });
-    // Inicia animação de "piscar". Ao final, chama onIsDone
     _animationController.forward().then((_) {
       widget.onIsDone?.call();
     });
