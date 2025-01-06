@@ -1,53 +1,108 @@
-# todo_prototype
+# **Taski - App de Lista de Tarefas**
 
-A new Flutter project.
+## Introdução
 
-# Desafio de código Mobile
+Dado o prazo limitado de 3 dias e compromissos pessoais durante esse período, optei por priorizar uma abordagem mais direta e eficiente na implementação deste desafio. O objetivo foi desenvolver um aplicativo funcional e focado nos requisitos principais.
 
-#### Nesse desafio serão avaliados
+Para simplificar a implementação, optei por não utilizar injeção de dependências, gerenciadores de estado de terceiros ou controladores de rotas personalizados. Além disso, as fontes e cores especificadas no protótipo do Figma foram substituídas por estilos padrão para otimizar o tempo de desenvolvimento.
 
-- Seu domínio em Flutter
-- Fluxo de navegação
-- Forma de organizar o código
+Embora mensagens de feedback para as ações de CRUD não tenham sido implementadas, a estrutura necessária para incluí-las está pronta, permitindo que sejam adicionadas facilmente em iterações futuras.
 
-Boa sorte e obrigado por participar!
+O app é offline first, com persistência de dados local utilizando o SQLite, e inclui funcionalidades essenciais como listagem, criação, atualização e exclusão de tarefas.
 
-## 🚨 As regras do jogo
+Algumas escolhas técnicas foram realizadas para priorizar simplicidade e eficiência, como o uso de setState para gerenciamento de estado e a exclusão de dependências complexas, como controladores de rotas personalizados ou injeção de dependências.
 
-1. Seu projeto deverá ser construído utilizando Flutter;
+---
 
-2. O aplicativo de deverá ser offline first;
+## **Objetivo**
 
-3. Seu projeto deverá ser construído utilizando o layout disponibilizado na descrição do teste;
+O app foi projetado para:
 
-4. Crie um arquivo README explicando como executar o projeto.
+- Listar tarefas pendentes com suporte a scroll infinito;
+- Listar tarefas finalizadas separadamente;
+- Criar novas tarefas e atualizá-las;
+- Marcar tarefas como concluídas;
+- Excluir tarefas individualmente ou em massa (tarefas concluídas);
+- Armazenar todas as tarefas localmente (**offline first**).
 
-## 🎁 Bônus
+---
 
-Esses itens não são obrigatórios, porém desejados.
+## **Técnicas e Ferramentas Utilizadas**
 
-- Clean Code
-- Arquitetura MVVM
-- Testes automatizados
+### **Arquitetura**
 
-## 🖥 O Desafio
+- **MVVM (Model-View-ViewModel):**
+  - **Model:** Define os dados da aplicação, como a classe `Todo`, que representa uma tarefa.
+  - **ViewModel:** Gerencia o estado e as ações da aplicação, como carregar tarefas, adicionar, editar ou excluir. Utiliza `ChangeNotifier` para notificar alterações de estado às views.
+  - **View:** Componentes visuais, como `TodoListScreen`, que interagem com o ViewModel para refletir os dados e ações.
 
-Você deverá construir um projeto utilizando o layout proposto:
+### **Banco de Dados**
 
-- Listagem de tarefas com scroll infinito;
-- Listagem de tarefas finalizadas;
-- Criar tarefa;
-- Os dados deverão ser salvo local utilizando um banco de dados (sqlite, Hive, etc...);
+- **SQLite (sqflite):**  
+  Persistência local foi implementada com SQLite, garantindo armazenamento offline. Um `DatabaseService` foi criado para abstrair operações CRUD no banco.
 
-### Layout:
+### **Gerenciamento de Estado**
 
-O layout está disponível no link: [Protótipo](https://www.figma.com/proto/RPnpIHgvIKobI7LieqNCcw/Taski-To-Do?node-id=12-387&p=f&t=l4R38GZ4q3qrv2XW-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1)
+- **`setState`:**  
+  Utilizado em conjunto com o padrão MVVM para atualizar o estado local de widgets.
+- **`ChangeNotifier`:**  
+  Gerencia o estado compartilhado no ViewModel, notificando as views sobre alterações.
 
-## 🏗 Ao finalizar o projeto
+### **Lógica de Negócio**
 
-Seu projeto deve ser disponibilizado em um repositório **público** do GitHub.
-Envie um email para willhoffmanndev@gmail.com com o assunto Desafio Mobile - [SEU NOME] contendo o link para o repositório que você criou.
+- **Freezed para imutabilidade:**  
+  A biblioteca `freezed` foi utilizada para criar modelos de dados imutáveis, como a classe `Todo`, facilitando cópias seguras com modificações (`copyWith`) e garantindo maior integridade nos dados.
+- **Repositórios:**  
+  O padrão de repositório (`TodoRepository`) foi implementado para centralizar a lógica de persistência de dados, desacoplando o banco de dados do ViewModel.
 
-## :question: Dúvidas
+### **Navegação**
 
-Envie suas dúvidas diretamente para willhoffmanndev@gmail.com.
+- **Rotas Simples:**  
+  A navegação foi mantida simples, utilizando métodos como `Navigator.push` e `showModalBottomSheet` diretamente. Isso permitiu foco na lógica de negócios e na interface.
+
+### **UI/UX**
+
+- **Flutter Widgets:**
+
+  - `ListView.builder`: Para renderizar listas de tarefas.
+  - `ListTile` e `Card`: Para estilização dos itens da lista.
+  - **Animações Simples:** Foi implementada uma animação de "piscar" no card ao marcar uma tarefa como concluída, utilizando `AnimationController` e `FadeTransition`.
+
+- **Custom Widgets:**  
+  Componentes reutilizáveis, como `TaskiCheckbox` e `OptionsTodoComponent`, foram criados para melhorar a modularidade da interface.
+
+### **Outras Técnicas**
+
+- **Comandos Assíncronos:**  
+  A classe `Command` foi criada para encapsular ações assíncronas e facilitar o gerenciamento de estados como “carregando” e “erro” em operações CRUD.
+- **Filtros de Tarefas:**  
+  As tarefas foram filtradas dinamicamente entre concluídas (`isDone == true`) e pendentes (`isDone == false`) no ViewModel.
+
+---
+
+## **Bibliotecas Utilizadas (Principais)**
+
+1. **`freezed` e `build_runner`:** Para geração de classes imutáveis e métodos auxiliares.
+2. **`sqflite`:** Para integração com SQLite.
+3. **`path`:** Para manipulação de caminhos no sistema de arquivos.
+
+---
+
+## **Estrutura do Código**
+
+- **`business/`:** Contém o modelo de dados (`Todo`) e as regras de negócios.
+- **`data/`:** Contém o serviço de banco de dados (`DatabaseService`) e o repositório (`TodoRepository`).
+- **`ui/`:** Contém as telas e componentes visuais, como `TodoListScreen` e `ExpansionTileComponent`.
+- **`utils/`:** Utilitários gerais, como `Result` e `Command` para operações assíncronas.
+
+---
+
+## **Limitações**
+
+1. Mensagens de feedback após ações CRUD não foram implementadas, mas a estrutura está pronta para futuras adições.
+2. Os estilos de fonte e cores do protótipo do Figma foram simplificados, priorizando funcionalidade.
+3. Funcionalidades avançadas, como injeção de dependências ou gerenciadores de estado mais robustos (ex.: `Provider` ou `Riverpod`), foram deixadas de lado para priorizar agilidade.
+
+---
+
+**Obrigado pela oportunidade de participar do desafio!**
